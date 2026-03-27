@@ -24,18 +24,19 @@ npm run preview  # Preview production build
 
 ## Architecture
 
-Single-page React application with monolithic component structure:
+Single-page React application with component-based structure:
 
 - `src/main.jsx` - React entry point
-- `src/App.jsx` - All application logic (single component with form, filters, summary, and transaction list)
+- `src/App.jsx` - Root component, manages transactions state
+- `src/Summary.jsx` - Displays income, expenses, and balance (calculates totals from transactions prop)
+- `src/TransactionForm.jsx` - Form for adding new transactions (manages form state, calls onAddTransaction callback)
+- `src/TransactionList.jsx` - Displays filtered transaction table (manages filter state internally)
 - `src/App.css` - Component styles
 - `src/index.css` - Global styles
 
-State management uses React useState hooks at the root level. Transactions are stored in-memory with sample data.
+State management: App.jsx owns transactions array and passes it down. Child components manage their own local state (form inputs, filters).
 
 ## Known Intentional Issues
 
-1. **Amount calculation bug** - Amounts stored as strings cause string concatenation instead of numeric addition in totals
-2. **Missing delete functionality** - CSS exists for `.delete-btn` but not implemented in JSX
-3. **No input validation** - Form only checks for empty fields
-4. **Monolithic component** - All logic in single App.jsx file
+1. **Missing delete functionality** - CSS exists for `.delete-btn` but not implemented in JSX
+2. **No input validation** - Form only checks for empty fields
