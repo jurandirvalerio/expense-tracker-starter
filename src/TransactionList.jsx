@@ -2,9 +2,10 @@ import { useState } from 'react'
 
 const categories = ["food", "housing", "utilities", "transport", "entertainment", "salary", "other"];
 
-function TransactionList({ transactions }) {
+function TransactionList({ transactions, onDeleteTransaction }) {
   const [filterType, setFilterType] = useState("all");
   const [filterCategory, setFilterCategory] = useState("all");
+  const [pendingDeleteId, setPendingDeleteId] = useState(null);
 
   let filteredTransactions = transactions;
   if (filterType !== "all") {
@@ -14,8 +15,24 @@ function TransactionList({ transactions }) {
     filteredTransactions = filteredTransactions.filter(t => t.category === filterCategory);
   }
 
+  const confirmDelete = () => {
+    onDeleteTransaction(pendingDeleteId);
+    setPendingDeleteId(null);
+  };
+
   return (
     <div className="transactions">
+      {pendingDeleteId !== null && (
+        <div className="dialog-overlay">
+          <div className="dialog">
+            <p>Are you sure you want to delete this transaction?</p>
+            <div className="dialog-actions">
+              <button onClick={() => setPendingDeleteId(null)}>Cancel</button>
+              <button className="confirm-btn" onClick={confirmDelete}>Confirm</button>
+            </div>
+          </div>
+        </div>
+      )}
       <h2>Transactions</h2>
       <div className="filters">
         <select value={filterType} onChange={(e) => setFilterType(e.target.value)}>
@@ -38,6 +55,7 @@ function TransactionList({ transactions }) {
             <th>Description</th>
             <th>Category</th>
             <th>Amount</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -48,6 +66,9 @@ function TransactionList({ transactions }) {
               <td>{t.category}</td>
               <td className={t.type === "income" ? "income-amount" : "expense-amount"}>
                 {t.type === "income" ? "+" : "-"}${t.amount}
+              </td>
+              <td>
+                <button onClick={() => setPendingDeleteId(t.id)}>Delete</button>
               </td>
             </tr>
           ))}
